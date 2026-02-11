@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuestPass - WiFi Guest Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-card, #printable-card * {
+                visibility: visible;
+            }
+            #printable-card {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                border: 2px solid #000; /* Ensure border prints */
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+    <div class="container mx-auto max-w-md">
+        <!-- Input Form -->
+        <div id="form-container" class="glass rounded-2xl p-8 text-white">
+            <h1 class="text-3xl font-bold mb-6 text-center tracking-tight">GuestPass</h1>
+            <p class="text-white/80 text-center mb-8">Create a beautiful WiFi access card for your guests.</p>
+            
+            <form id="wifi-form" class="space-y-4">
+                <div>
+                    <label for="ssid" class="block text-sm font-medium mb-1 ml-1">Network Name (SSID)</label>
+                    <input type="text" id="ssid" name="ssid" required 
+                        class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 placeholder-white/40 text-white"
+                        placeholder="MyHomeWiFi">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium mb-1 ml-1">Password</label>
+                    <input type="text" id="password" name="password" 
+                        class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 placeholder-white/40 text-white"
+                        placeholder="SecretPassword123">
+                </div>
+
+                <div class="flex items-center justify-between gap-4">
+                     <div class="flex-1">
+                        <label for="encryption" class="block text-sm font-medium mb-1 ml-1">Encryption</label>
+                        <select id="encryption" name="encryption"
+                            class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 text-white [&>option]:text-black">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">None</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                        class="w-full py-3 rounded-lg bg-white text-indigo-600 font-bold hover:bg-opacity-90 transition transform hover:scale-[1.02] shadow-lg">
+                        Generate Guest Card
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result Card (Hidden by default) -->
+        <div id="result-container" class="hidden mt-8">
+            <div id="printable-card" class="bg-white text-gray-800 rounded-xl shadow-2xl p-8 max-w-sm mx-auto border-4 border-gray-900 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-indigo-500"></div>
+                
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-widest">Guest WiFi</h2>
+                    <p class="text-gray-500 text-sm mt-1">Scan to Connect</p>
+                </div>
+
+                <div class="flex justify-center mb-6">
+                    <img id="qr-image" src="" alt="WiFi QR Code" class="w-48 h-48 border-2 border-gray-100 rounded-lg">
+                </div>
+
+                <div class="space-y-3 text-center">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase font-semibold">Network</p>
+                        <p id="display-ssid" class="text-lg font-bold text-gray-800 font-mono"></p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase font-semibold">Password</p>
+                        <p id="display-password" class="text-lg font-bold text-gray-800 font-mono"></p>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-gray-100 text-center">
+                    <p class="text-xs text-gray-400">Enjoy your stay!</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex gap-4 justify-center no-print">
+                <button onclick="window.print()" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-md flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2-4h6a2 2 0 002-2V9a2 2 0 00-2-2h-6a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Print Card
+                </button>
+                <button onclick="resetForm()" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition shadow-md">
+                    Create New
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('wifi-form');
+        const resultContainer = document.getElementById('result-container');
+        const formContainer = document.getElementById('form-container');
+        const displaySsid = document.getElementById('display-ssid');
+        const displayPassword = document.getElementById('display-password');
+        const qrImage = document.getElementById('qr-image');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('Failed to generate');
+
+                const { qrCodeUrl } = await response.json();
+
+                displaySsid.textContent = data.ssid;
+                displayPassword.textContent = data.password || 'Open Network';
+                qrImage.src = qrCodeUrl;
+
+                formContainer.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+
+            } catch (error) {
+                alert('Error generating QR code. Please try again.');
+                console.error(error);
+            }
+        });
+
+        function resetForm() {
+            form.reset();
+            resultContainer.classList.add('hidden');
+            formContainer.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
